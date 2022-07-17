@@ -43,7 +43,8 @@ ENV HOME /home/devops
 RUN useradd -u 10000 -g root -G sudo -d ${HOME} -m devops && \
     usermod --password $(echo password | openssl passwd -1 -stdin) devops && \
     mkdir -p /workspaces && \
-    chown -R 10000:0 /workspaces
+    chown -R 10000:0 /workspaces && \
+    chmod -R g=u /workspaces ${HOME}
 
 USER devops
 WORKDIR ${HOME}

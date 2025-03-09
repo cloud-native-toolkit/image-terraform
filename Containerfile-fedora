@@ -1,4 +1,4 @@
-FROM fedora:41
+FROM docker.io/fedora:42
 
 ARG TARGETPLATFORM
 ARG OPENTOFU_VERSION=1.9.0
@@ -29,7 +29,7 @@ RUN groupadd --force sudo && \
     chmod u+w /etc/sudoers && \
     echo "%sudo   ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-ENV HOME /home/devops
+ENV HOME=/home/devops
 
 # Create devops user
 RUN useradd -u 10000 -g root -G sudo -d ${HOME} -m devops && \

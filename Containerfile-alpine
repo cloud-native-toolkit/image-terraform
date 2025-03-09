@@ -1,9 +1,9 @@
-FROM docker.io/alpine:3.20.0
+FROM docker.io/alpine:3.21.3
 
 ARG TARGETPLATFORM
-ARG TERRAFORM_VERSION=1.8.5
-ARG TERRAGRUNT_VERSION=0.59.2
-ARG YQ_VERSION=4.27.2
+ARG OPENTOFU_VERSION=1.9.0
+ARG TERRAGRUNT_VERSION=0.75.3
+ARG YQ_VERSION=4.45.1
 
 RUN apk add --no-cache \
   git \
@@ -18,14 +18,10 @@ RUN apk add --no-cache \
   openssh \
   && rm -rf /var/cache/apk/*
 
-RUN curl -Lso /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_$(if [[ "$TARGETPLATFORM" == "linux/arm64" ]]; then echo "arm64"; else echo "amd64"; fi).zip && \
-    mkdir -p /tmp/terraform && \
-    cd /tmp/terraform && \
-    unzip /tmp/terraform.zip && \
-    mv ./terraform /usr/local/bin && \
-    cd - && \
-    rm -rf /tmp/terraform && \
-    rm /tmp/terraform.zip
+RUN curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o install-opentofu.sh && \
+  chmod +x install-opentofu.sh && \
+  ./install-opentofu.sh --install-method apk --opentofu-version ${OPENTOFU_VERSION} && \
+  rm -f install-opentofu.sh
 
 RUN curl -Lso /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_$(if [[ "$TARGETPLATFORM" == "linux/arm64" ]]; then echo "arm64"; else echo "amd64"; fi)" && chmod +x /usr/local/bin/yq
 
@@ -42,7 +38,7 @@ RUN groupadd --force sudo && \
     chmod u+w /etc/sudoers && \
     echo "%sudo   ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-ENV HOME /home/devops
+ENV HOME=/home/devops
 
 # Create devops user
 RUN useradd -u 10000 -g root -G sudo -d ${HOME} -m devops && \

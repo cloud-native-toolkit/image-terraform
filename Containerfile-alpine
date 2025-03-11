@@ -23,9 +23,9 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opent
   ./install-opentofu.sh --install-method apk --opentofu-version ${OPENTOFU_VERSION} && \
   rm -f install-opentofu.sh
 
-RUN curl -Lso /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_$(if [[ "$TARGETPLATFORM" == "linux/arm64" ]]; then echo "arm64"; else echo "amd64"; fi)" && chmod +x /usr/local/bin/yq
+RUN curl -Lso /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_$(if [[ "$TARGETPLATFORM" =~ "linux/arm64" ]]; then echo "arm64"; else echo "amd64"; fi)" && chmod +x /usr/local/bin/yq
 
-RUN curl -sLo ./terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_$(if [[ "$TARGETPLATFORM" == "linux/arm64" ]]; then echo "arm64"; else echo "amd64"; fi) && \
+RUN curl -sLo ./terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_$(if [[ "$TARGETPLATFORM" =~ "linux/arm64" ]]; then echo "arm64"; else echo "amd64"; fi) && \
     chmod +x ./terragrunt && \
     mv ./terragrunt /usr/bin/terragrunt
 

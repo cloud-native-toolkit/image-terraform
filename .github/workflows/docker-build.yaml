@@ -8,10 +8,26 @@ on:
   pull_request:
     branches:
       - main
+  label:
+    types:
+      - created
+      - edited
+      - deleted
 
 jobs:
+  check_labels:
+    name: Check labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: docker://agilepathway/pull-request-label-checker:latest
+        with:
+          one_of: major,minor,patch
+          any_of: bug,enhancement,chore
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
   build:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'label' }}
 
     strategy:
       matrix:
@@ -135,7 +151,7 @@ jobs:
           labels: ${{ steps.cntk-meta.outputs.labels }}
 
   verify:
-    needs: build
+    needs: ["build", "check_labels"]
     runs-on: ubuntu-latest
 
     steps:
